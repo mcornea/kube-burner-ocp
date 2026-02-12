@@ -1,0 +1,9 @@
+[
+  {
+    "version": "fix-metrics-prometheus",
+    "title": "fix-metrics-prometheus",
+    "aliases": [
+      "latest"
+    ]
+  }
+]
