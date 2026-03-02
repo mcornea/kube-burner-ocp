@@ -229,6 +229,17 @@ teardown_file() {
   git clean -fd
 }
 
+@test "autonode: local-indexing=true" {
+  run_cmd ${KUBE_BURNER_OCP} autonode --pods=4 --pod-ready-threshold=5m --job-pause=0s --local-indexing --uuid=${UUID}
+  check_file_list collected-metrics-${UUID}/jobSummary.json \
+    collected-metrics-${UUID}/podLatencyMeasurement-autonode-scale.json \
+    collected-metrics-${UUID}/podLatencyQuantilesMeasurement-autonode-scale.json \
+    collected-metrics-${UUID}/nodeLatencyMeasurement-autonode-scale.json \
+    collected-metrics-${UUID}/nodeLatencyQuantilesMeasurement-autonode-scale.json \
+    collected-metrics-${UUID}/nodeClaimLatencyMeasurement-autonode-scale.json \
+    collected-metrics-${UUID}/nodeClaimLatencyQuantilesMeasurement-autonode-scale.json
+}
+
 @test "build-farm: basic execution with churn" {
   run_cmd ${KUBE_BURNER_OCP} build-farm \
     --job-iterations=1 \

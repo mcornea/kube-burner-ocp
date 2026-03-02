@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.JobName}}-{{replace "." "-" .instanceType}}-{{.Iteration}}
+  labels:
+    app: autonode-pause
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      instance: {{.JobName}}-{{replace "." "-" .instanceType}}-{{.Iteration}}
+  template:
+    metadata:
+      labels:
+        app: autonode-pause
+        instance: {{.JobName}}-{{replace "." "-" .instanceType}}-{{.Iteration}}
+    spec:
+      nodeSelector:
+        node.kubernetes.io/instance-type: "{{.instanceType}}"
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: pause
+          image: {{.containerImage}}
+          resources:
+            requests:
+              cpu: {{.cpuRequest}}
+              memory: {{.memoryRequest}}
+          imagePullPolicy: IfNotPresent
