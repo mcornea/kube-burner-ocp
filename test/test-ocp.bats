@@ -230,7 +230,7 @@ teardown_file() {
 }
 
 @test "autonode: local-indexing=true" {
-  run_cmd ${KUBE_BURNER_OCP} autonode --pods=4 --pod-ready-threshold=5m --job-pause=0s --local-indexing --uuid=${UUID}
+  run_cmd ${KUBE_BURNER_OCP} autonode --pod-ready-threshold=5m --job-pause=0s --local-indexing --uuid=${UUID}
   check_file_list collected-metrics-${UUID}/jobSummary.json \
     collected-metrics-${UUID}/podLatencyMeasurement-autonode-scale.json \
     collected-metrics-${UUID}/podLatencyQuantilesMeasurement-autonode-scale.json \

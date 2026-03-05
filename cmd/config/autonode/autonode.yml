@@ -53,32 +53,12 @@ jobs:
       pod-security.kubernetes.io/enforce: privileged
       pod-security.kubernetes.io/audit: privileged
       pod-security.kubernetes.io/warn: privileged
+    jobIterationDelay: {{.WAVE_DELAY}}
     objects:
       - objectTemplate: deployment.yml
         replicas: 1
         inputVars:
-          cpuRequest: {{.CPU_REQUEST}}
+          cpuRequests: {{.CPU_REQUESTS | toJson}}
+          podCounts: {{.POD_COUNTS | toJson}}
           memoryRequest: {{.MEMORY_REQUEST}}
           containerImage: {{.CONTAINER_IMAGE}}
-          instanceType: m5.xlarge
-      - objectTemplate: deployment.yml
-        replicas: 1
-        inputVars:
-          cpuRequest: {{.CPU_REQUEST}}
-          memoryRequest: {{.MEMORY_REQUEST}}
-          containerImage: {{.CONTAINER_IMAGE}}
-          instanceType: m5.2xlarge
-      - objectTemplate: deployment.yml
-        replicas: 1
-        inputVars:
-          cpuRequest: {{.CPU_REQUEST}}
-          memoryRequest: {{.MEMORY_REQUEST}}
-          containerImage: {{.CONTAINER_IMAGE}}
-          instanceType: m5.4xlarge
-      - objectTemplate: deployment.yml
-        replicas: 1
-        inputVars:
-          cpuRequest: {{.CPU_REQUEST}}
-          memoryRequest: {{.MEMORY_REQUEST}}
-          containerImage: {{.CONTAINER_IMAGE}}
-          instanceType: m5.8xlarge

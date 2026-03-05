@@ -15,9 +15,13 @@
 package workloads
 
 import (
+	"embed"
 	"os"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
+	"k8s.io/apimachinery/pkg/api/resource"
 	kubeburnermeasurements "github.com/kube-burner/kube-burner/v2/pkg/measurements"
 	"github.com/kube-burner/kube-burner/v2/pkg/config"
 	"github.com/kube-burner/kube-burner/v2/pkg/workloads"
@@ -26,12 +30,27 @@ import (
 	ocpMeasurements "github.com/kube-burner/kube-burner-ocp/pkg/measurements"
 )
 
+// WavesConfig represents the top-level waves configuration
+type WavesConfig struct {
+	Delay time.Duration `yaml:"delay"`
+	Waves []Wave        `yaml:"waves"`
+}
+
+// Wave represents a single wave of pods with a specific CPU request
+type Wave struct {
+	Pods       int    `yaml:"pods"`
+	CPURequest string `yaml:"cpuRequest"`
+}
+
+const wavesConfigDir = "config/autonode"
+
 // NewAutoNode holds autonode workload
-func NewAutoNode(wh *workloads.WorkloadHelper) *cobra.Command {
+func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command {
 	var rc int
 	var metricsProfiles []string
-	var pods, churnCycles, churnPercent int
-	var cpuRequest, memoryRequest, containerImage string
+	var wavesConfigFile string
+	var churnCycles, churnPercent int
+	var memoryRequest, containerImage string
 	var podReadyThreshold, jobPause, churnDuration, churnDelay, churnDeleteDelay time.Duration
 	var deletionStrategy, churnMode string
 	cmd := &cobra.Command{
@@ -39,7 +58,47 @@ func NewAutoNode(wh *workloads.WorkloadHelper) *cobra.Command {
 		Short:        "Runs autonode workload",
 		SilenceUsage: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			AdditionalVars["JOB_ITERATIONS"] = pods / 4
+			wavesConfigPath := wavesConfigDir + "/" + wavesConfigFile + ".yml"
+			data, err := embedFS.ReadFile(wavesConfigPath)
+			if err != nil {
+				log.Fatalf("Error reading embedded waves config: %v", err)
+			}
+			var wavesConfig WavesConfig
+			if err := yaml.Unmarshal(data, &wavesConfig); err != nil {
+				log.Fatalf("Error parsing embedded waves config: %v", err)
+			}
+			waves := wavesConfig.Waves
+			if len(waves) == 0 {
+				log.Fatal("Waves config file must contain at least one wave")
+			}
+			var cpuRequests []string
+			var podCounts []int
+			for i, w := range waves {
+				if w.Pods <= 0 {
+					log.Fatalf("Wave %d has invalid pods count: %d", i, w.Pods)
+				}
+				if w.CPURequest == "" {
+					log.Fatalf("Wave %d has empty cpuRequest", i)
+				}
+				cpuRequests = append(cpuRequests, w.CPURequest)
+				podCounts = append(podCounts, w.Pods)
+			}
+			log.Infof("Configured %d waves", len(waves))
+			var grandTotal resource.Quantity
+			totalPods := 0
+			for i, w := range waves {
+				perPod := resource.MustParse(w.CPURequest)
+				waveTotal := perPod.DeepCopy()
+				for j := 1; j < w.Pods; j++ {
+					waveTotal.Add(perPod)
+				}
+				grandTotal.Add(waveTotal)
+				totalPods += w.Pods
+				log.Infof("  Wave %d: %d pods x %s cores = %s total cores", i, w.Pods, w.CPURequest, &waveTotal)
+			}
+			log.Infof("Total across all waves: %d pods, %s cores", totalPods, &grandTotal)
+			AdditionalVars["JOB_ITERATIONS"] = len(waves)
+			AdditionalVars["WAVE_DELAY"] = wavesConfig.Delay
 			AdditionalVars["DELETION_STRATEGY"] = deletionStrategy
 			AdditionalVars["POD_READY_THRESHOLD"] = podReadyThreshold
 			AdditionalVars["JOB_PAUSE"] = jobPause
@@ -49,13 +108,14 @@ func NewAutoNode(wh *workloads.WorkloadHelper) *cobra.Command {
 			AdditionalVars["CHURN_PERCENT"] = churnPercent
 			AdditionalVars["CHURN_DELETE_DELAY"] = churnDeleteDelay
 			AdditionalVars["CHURN_MODE"] = churnMode
-			AdditionalVars["CPU_REQUEST"] = cpuRequest
+			AdditionalVars["CPU_REQUESTS"] = cpuRequests
+			AdditionalVars["POD_COUNTS"] = podCounts
 			AdditionalVars["MEMORY_REQUEST"] = memoryRequest
 			AdditionalVars["CONTAINER_IMAGE"] = containerImage
 			setMetrics(cmd, metricsProfiles)
 			wh.SetMeasurements(map[string]kubeburnermeasurements.NewMeasurementFactory{
-				"autoNodeLatency": ocpMeasurements.NewAutoNodeLatencyFactory,
-				"nodeClaimLatency":      ocpMeasurements.NewNodeClaimLatencyFactory,
+				"autoNodeLatency":  ocpMeasurements.NewAutoNodeLatencyFactory,
+				"nodeClaimLatency": ocpMeasurements.NewNodeClaimLatencyFactory,
 			})
 			wh.SetVariables(AdditionalVars, SetVars)
 			rc = wh.Run(cmd.Name() + ".yml")
@@ -64,8 +124,7 @@ func NewAutoNode(wh *workloads.WorkloadHelper) *cobra.Command {
 			os.Exit(rc)
 		},
 	}
-	cmd.Flags().IntVar(&pods, "pods", 100, "Total number of pods distributed evenly across 4 instance types (must be divisible by 4)")
-	cmd.Flags().StringVar(&cpuRequest, "cpu-request", "500m", "CPU request per pod")
+	cmd.Flags().StringVar(&wavesConfigFile, "waves-config", "waves", "Name of the waves config file (without .yml extension)")
 	cmd.Flags().StringVar(&memoryRequest, "memory-request", "128Mi", "Memory request per pod")
 	cmd.Flags().StringVar(&containerImage, "container-image", "registry.k8s.io/pause:3.9", "Pod container image")
 	cmd.Flags().DurationVar(&podReadyThreshold, "pod-ready-threshold", 5*time.Minute, "Pod ready timeout threshold")

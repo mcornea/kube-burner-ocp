@@ -1,0 +1,45 @@
+# Delay between waves
+delay: 30s
+# Each wave fits on a single node (m5.xlarge - m5.8xlarge)
+# Total: 2000 pods, 1000 cores
+waves:
+- pods: 6
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 12
+  cpuRequest: "500m"    # 1 x m5.2xlarge (8 vCPU)
+- pods: 24
+  cpuRequest: "500m"    # 1 x m5.4xlarge (16 vCPU)
+- pods: 48
+  cpuRequest: "500m"    # 1 x m5.8xlarge (32 vCPU)
+- pods: 6
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 12
+  cpuRequest: "500m"    # 1 x m5.2xlarge (8 vCPU)
+- pods: 24
+  cpuRequest: "500m"    # 1 x m5.4xlarge (16 vCPU)
+- pods: 48
+  cpuRequest: "500m"    # 1 x m5.8xlarge (32 vCPU)
+- pods: 6
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 12
+  cpuRequest: "500m"    # 1 x m5.2xlarge (8 vCPU)
+- pods: 24
+  cpuRequest: "500m"    # 1 x m5.4xlarge (16 vCPU)
+- pods: 48
+  cpuRequest: "500m"    # 1 x m5.8xlarge (32 vCPU)
+- pods: 6
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 12
+  cpuRequest: "500m"    # 1 x m5.2xlarge (8 vCPU)
+- pods: 24
+  cpuRequest: "500m"    # 1 x m5.4xlarge (16 vCPU)
+- pods: 48
+  cpuRequest: "500m"    # 1 x m5.8xlarge (32 vCPU)
+- pods: 6
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 12
+  cpuRequest: "500m"    # 1 x m5.2xlarge (8 vCPU)
+- pods: 24
+  cpuRequest: "500m"    # 1 x m5.4xlarge (16 vCPU)
+- pods: 1598
+  cpuRequest: "500m"    # remaining to 2000 pods
