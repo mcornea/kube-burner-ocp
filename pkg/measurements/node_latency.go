@@ -252,8 +252,8 @@ func nodeTransformFunc() cache.TransformFunc {
 		}
 		metadata := map[string]any{
 			"name":              u.GetName(),
-			"uid":               u.GetUID(),
-			"creationTimestamp": u.GetCreationTimestamp(),
+			"uid":               string(u.GetUID()),
+			"creationTimestamp": u.GetCreationTimestamp().Format(time.RFC3339),
 			"labels":            u.GetLabels(),
 		}
 		minimal := &unstructured.Unstructured{

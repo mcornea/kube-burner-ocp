@@ -112,7 +112,7 @@ func (nc *nodeClaimLatency) handleCreate(obj any) {
 		Labels:     normalizeLabels(u.GetLabels()),
 		Metadata:   nc.Metadata,
 	})
-	log.Debugf("NodeClaim %s created at %v", name, u.GetCreationTimestamp().UTC())
+	log.Debugf("NodeClaim %s created at %v (uid=%s)", name, u.GetCreationTimestamp().UTC(), uid)
 }
 
 func (nc *nodeClaimLatency) handleUpdate(obj any) {
@@ -272,6 +272,68 @@ func (nc *nodeClaimLatency) collectExisting() {
 
 func (nc *nodeClaimLatency) Collect(measurementWg *sync.WaitGroup) {
 	defer measurementWg.Done()
+	// NodeClaims are transitory and may be deleted before Collect runs,
+	// so we merge API data into existing watcher data rather than replacing it.
+	dynamicClient := dynamic.NewForConfigOrDie(nc.RestConfig)
+	listOpts := metav1.ListOptions{}
+	if nc.LabelSelector != "" {
+		listOpts.LabelSelector = nc.LabelSelector
+	}
+	list, err := dynamicClient.Resource(nodeClaimGVR).List(context.TODO(), listOpts)
+	if err != nil {
+		log.Debugf("error listing NodeClaims during collect (may already be deleted): %v", err)
+		return
+	}
+	log.Debugf("NodeClaim Collect: found %d NodeClaims from API", len(list.Items))
+	for i := range list.Items {
+		item := &list.Items[i]
+		uid := string(item.GetUID())
+		m := nodeClaimMetric{
+			Timestamp:  item.GetCreationTimestamp().UTC(),
+			Name:       item.GetName(),
+			MetricName: nodeClaimLatencyMeasurement,
+			UUID:       nc.Uuid,
+			JobName:    nc.JobConfig.Name,
+			Labels:     normalizeLabels(item.GetLabels()),
+			Metadata:   nc.Metadata,
+		}
+		if nodeName, found, _ := unstructured.NestedString(item.Object, "status", "nodeName"); found {
+			m.NodeName = nodeName
+		}
+		conditions, found, _ := unstructured.NestedSlice(item.Object, "status", "conditions")
+		if found {
+			for _, cRaw := range conditions {
+				c, ok := cRaw.(map[string]any)
+				if !ok {
+					continue
+				}
+				condType, _ := c["type"].(string)
+				status, _ := c["status"].(string)
+				if status != "True" {
+					continue
+				}
+				tsStr, _ := c["lastTransitionTime"].(string)
+				if tsStr == "" {
+					continue
+				}
+				t, err := time.Parse(time.RFC3339, tsStr)
+				if err != nil {
+					continue
+				}
+				switch condType {
+				case nodeClaimLaunched:
+					m.Launched = t.UTC()
+				case nodeClaimRegistered:
+					m.Registered = t.UTC()
+				case nodeClaimInitialized:
+					m.Initialized = t.UTC()
+				case nodeClaimReady:
+					m.Ready = t.UTC()
+				}
+			}
+		}
+		nc.Metrics.Store(uid, m)
+	}
 }
 
 func (nc *nodeClaimLatency) Stop() error {
@@ -331,8 +393,8 @@ func nodeClaimTransformFunc() cache.TransformFunc {
 		}
 		metadata := map[string]any{
 			"name":              u.GetName(),
-			"uid":               u.GetUID(),
-			"creationTimestamp": u.GetCreationTimestamp(),
+			"uid":               string(u.GetUID()),
+			"creationTimestamp": u.GetCreationTimestamp().Format(time.RFC3339),
 			"labels":            u.GetLabels(),
 		}
 		minimal := &unstructured.Unstructured{
