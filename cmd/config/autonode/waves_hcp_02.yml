@@ -1,5 +1,13 @@
 # Delay between waves
 delay: 30s
+# Control-plane stress objects per namespace
+# Scaled for ~100 pods/wave avg (1000 pods / 10 waves)
+stress:
+  secrets: 100
+  configmaps: 100
+  services: 50
+  routes: 20
+  networkPolicies: 3
 # Each wave fits on a single node (m5.xlarge - m5.8xlarge)
 # Total: 1000 pods, 500 cores
 waves:

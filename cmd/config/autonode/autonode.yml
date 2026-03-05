@@ -36,7 +36,7 @@ jobs:
     jobIterations: {{.JOB_ITERATIONS}}
     qps: {{.QPS}}
     burst: {{.BURST}}
-    namespacedIterations: false
+    namespacedIterations: true
     churnConfig:
       cycles: {{.CHURN_CYCLES}}
       duration: {{.CHURN_DURATION}}
@@ -60,5 +60,26 @@ jobs:
         inputVars:
           cpuRequests: {{.CPU_REQUESTS | toJson}}
           podCounts: {{.POD_COUNTS | toJson}}
-          memoryRequest: {{.MEMORY_REQUEST}}
           containerImage: {{.CONTAINER_IMAGE}}
+{{ if gt .STRESS_SECRETS 0 }}
+      - objectTemplate: secret.yml
+        replicas: {{.STRESS_SECRETS}}
+{{ end }}
+{{ if gt .STRESS_CONFIGMAPS 0 }}
+      - objectTemplate: configmap.yml
+        replicas: {{.STRESS_CONFIGMAPS}}
+{{ end }}
+{{ if gt .STRESS_SERVICES 0 }}
+      - objectTemplate: service.yml
+        replicas: {{.STRESS_SERVICES}}
+{{ end }}
+{{ if gt .STRESS_ROUTES 0 }}
+      - objectTemplate: route.yml
+        replicas: {{.STRESS_ROUTES}}
+{{ end }}
+{{ if gt .STRESS_NETWORKPOLICIES 0 }}
+      - objectTemplate: np-deny-all.yml
+        replicas: 1
+      - objectTemplate: np-allow-from-ingress.yml
+        replicas: 1
+{{ end }}

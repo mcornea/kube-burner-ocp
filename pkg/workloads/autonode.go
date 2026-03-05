@@ -32,8 +32,18 @@ import (
 
 // WavesConfig represents the top-level waves configuration
 type WavesConfig struct {
-	Delay time.Duration `yaml:"delay"`
-	Waves []Wave        `yaml:"waves"`
+	Delay  time.Duration `yaml:"delay"`
+	Waves  []Wave        `yaml:"waves"`
+	Stress StressConfig  `yaml:"stress"`
+}
+
+// StressConfig defines the number of control-plane stress objects per namespace
+type StressConfig struct {
+	Secrets         int `yaml:"secrets"`
+	ConfigMaps      int `yaml:"configmaps"`
+	Services        int `yaml:"services"`
+	Routes          int `yaml:"routes"`
+	NetworkPolicies int `yaml:"networkPolicies"`
 }
 
 // Wave represents a single wave of pods with a specific CPU request
@@ -50,7 +60,7 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 	var metricsProfiles []string
 	var wavesConfigFile string
 	var churnCycles, churnPercent int
-	var memoryRequest, containerImage string
+	var containerImage string
 	var podReadyThreshold, jobPause, churnDuration, churnDelay, churnDeleteDelay time.Duration
 	var deletionStrategy, churnMode string
 	cmd := &cobra.Command{
@@ -97,6 +107,9 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 				log.Infof("  Wave %d: %d pods x %s cores = %s total cores", i, w.Pods, w.CPURequest, &waveTotal)
 			}
 			log.Infof("Total across all waves: %d pods, %s cores", totalPods, &grandTotal)
+			stress := wavesConfig.Stress
+			log.Infof("Stress config: secrets=%d configmaps=%d services=%d routes=%d networkPolicies=%d",
+				stress.Secrets, stress.ConfigMaps, stress.Services, stress.Routes, stress.NetworkPolicies)
 			AdditionalVars["JOB_ITERATIONS"] = len(waves)
 			AdditionalVars["WAVE_DELAY"] = wavesConfig.Delay
 			AdditionalVars["DELETION_STRATEGY"] = deletionStrategy
@@ -110,8 +123,12 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 			AdditionalVars["CHURN_MODE"] = churnMode
 			AdditionalVars["CPU_REQUESTS"] = cpuRequests
 			AdditionalVars["POD_COUNTS"] = podCounts
-			AdditionalVars["MEMORY_REQUEST"] = memoryRequest
 			AdditionalVars["CONTAINER_IMAGE"] = containerImage
+			AdditionalVars["STRESS_SECRETS"] = stress.Secrets
+			AdditionalVars["STRESS_CONFIGMAPS"] = stress.ConfigMaps
+			AdditionalVars["STRESS_SERVICES"] = stress.Services
+			AdditionalVars["STRESS_ROUTES"] = stress.Routes
+			AdditionalVars["STRESS_NETWORKPOLICIES"] = stress.NetworkPolicies
 			setMetrics(cmd, metricsProfiles)
 			wh.SetMeasurements(map[string]kubeburnermeasurements.NewMeasurementFactory{
 				"autoNodeLatency":  ocpMeasurements.NewAutoNodeLatencyFactory,
@@ -125,8 +142,7 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 		},
 	}
 	cmd.Flags().StringVar(&wavesConfigFile, "waves-config", "waves", "Name of the waves config file (without .yml extension)")
-	cmd.Flags().StringVar(&memoryRequest, "memory-request", "128Mi", "Memory request per pod")
-	cmd.Flags().StringVar(&containerImage, "container-image", "registry.k8s.io/pause:3.9", "Pod container image")
+	cmd.Flags().StringVar(&containerImage, "container-image", "quay.io/prometheus/busybox", "Pod container image")
 	cmd.Flags().DurationVar(&podReadyThreshold, "pod-ready-threshold", 5*time.Minute, "Pod ready timeout threshold")
 	cmd.Flags().DurationVar(&jobPause, "job-pause", 0, "Steady-state hold duration after pod creation")
 	cmd.Flags().IntVar(&churnCycles, "churn-cycles", 0, "Churn cycles to execute")

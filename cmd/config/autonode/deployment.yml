@@ -1,26 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.JobName}}-{{.Replica}}-{{.Iteration}}
+  name: {{.JobName}}-{{.Replica}}
   labels:
     app: autonode-pause
 spec:
   replicas: {{ index .podCounts .Iteration }}
   selector:
     matchLabels:
-      instance: {{.JobName}}-{{.Replica}}-{{.Iteration}}
+      instance: {{.JobName}}-{{.Replica}}
   template:
     metadata:
       labels:
         app: autonode-pause
-        instance: {{.JobName}}-{{.Replica}}-{{.Iteration}}
+        instance: {{.JobName}}-{{.Replica}}
     spec:
       terminationGracePeriodSeconds: 0
       containers:
         - name: pause
           image: {{.containerImage}}
+          command: ["sleep", "inf"]
           resources:
             requests:
               cpu: {{ index .cpuRequests .Iteration }}
-              memory: {{.memoryRequest}}
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "true"]
+            initialDelaySeconds: 1
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "true"]
+            initialDelaySeconds: 5
+            periodSeconds: 30
