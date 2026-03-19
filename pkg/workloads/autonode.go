@@ -46,10 +46,11 @@ type StressConfig struct {
 	NetworkPolicies int `yaml:"networkPolicies"`
 }
 
-// Wave represents a single wave of pods with a specific CPU request
+// Wave represents a single wave of pods with specific resource requests
 type Wave struct {
 	Pods       int    `yaml:"pods"`
 	CPURequest string `yaml:"cpuRequest"`
+	Nodepool   string `yaml:"nodepool"`
 }
 
 const wavesConfigDir = "config/autonode"
@@ -82,6 +83,7 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 				log.Fatal("Waves config file must contain at least one wave")
 			}
 			var cpuRequests []string
+			var nodepools []string
 			var podCounts []int
 			for i, w := range waves {
 				if w.Pods <= 0 {
@@ -91,6 +93,7 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 					log.Fatalf("Wave %d has empty cpuRequest", i)
 				}
 				cpuRequests = append(cpuRequests, w.CPURequest)
+				nodepools = append(nodepools, w.Nodepool)
 				podCounts = append(podCounts, w.Pods)
 			}
 			log.Infof("Configured %d waves", len(waves))
@@ -122,6 +125,7 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 			AdditionalVars["CHURN_DELETE_DELAY"] = churnDeleteDelay
 			AdditionalVars["CHURN_MODE"] = churnMode
 			AdditionalVars["CPU_REQUESTS"] = cpuRequests
+			AdditionalVars["NODEPOOLS"] = nodepools
 			AdditionalVars["POD_COUNTS"] = podCounts
 			AdditionalVars["CONTAINER_IMAGE"] = containerImage
 			AdditionalVars["STRESS_SECRETS"] = stress.Secrets

@@ -59,6 +59,7 @@ jobs:
         replicas: 1
         inputVars:
           cpuRequests: {{.CPU_REQUESTS | toJson}}
+          nodepools: {{.NODEPOOLS | toJson}}
           podCounts: {{.POD_COUNTS | toJson}}
           containerImage: {{.CONTAINER_IMAGE}}
 {{ if gt .STRESS_SECRETS 0 }}

@@ -1,0 +1,40 @@
+# Spike reproduction config
+# 1 cycle of 3 families × 3 sizes = 9 waves, 126 pods, 63 cores
+# Same nodepool topology as waves_hcp_02 but 8x fewer waves
+# Run with aggressive churn to trigger post-churn reconciliation storms:
+#   --churn-cycles 3 --churn-percent 55 --churn-delay 4m --churn-delete-delay 10s --job-pause 1m
+delay: 10s
+stress:
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
+  networkPolicies: 1
+waves:
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory

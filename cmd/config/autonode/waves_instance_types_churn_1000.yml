@@ -1,0 +1,468 @@
+# Multi-instance-type churn config targeting c6i, m6i, and r6i families
+# Based on waves_hcp_02_normalized.yml pattern with repeating cycles.
+# Uses separate NodePools per instance family with nodeSelector.
+#
+# Required NodePools:
+#   autonode-compute: c6i.xlarge, c6i.2xlarge, c6i.4xlarge
+#   autonode-general: m6i.xlarge, m6i.2xlarge, m6i.4xlarge
+#   autonode-memory:  r6i.xlarge, r6i.2xlarge, r6i.4xlarge
+#
+# Repeating xlarge → 2xlarge → 4xlarge cycle across 3 families
+# (6+12+24) x 3 families = 126 pods/cycle
+# 16 full cycles = 2016 pods total, 1008 cores
+delay: 15s
+stress:
+  secrets: 22
+  configmaps: 22
+  services: 11
+  routes: 5
+  networkPolicies: 3
+waves:
+# Cycle 1
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 2
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 3
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 4
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 5
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 6
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 7
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 8
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 9
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 10
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 11
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 12
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 13
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 14
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 15
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge
+# Cycle 16
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge

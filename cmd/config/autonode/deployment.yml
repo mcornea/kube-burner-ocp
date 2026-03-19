@@ -16,6 +16,11 @@ spec:
         instance: {{.JobName}}-{{.Replica}}
     spec:
       terminationGracePeriodSeconds: 0
+      {{- $np := index .nodepools .Iteration }}
+      {{- if $np }}
+      nodeSelector:
+        karpenter.sh/nodepool: "{{ $np }}"
+      {{- end }}
       containers:
         - name: pause
           image: {{.containerImage}}

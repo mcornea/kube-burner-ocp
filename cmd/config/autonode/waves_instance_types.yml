@@ -1,0 +1,48 @@
+# Multi-instance-type wave config targeting c6i, m6i, and r6i families
+# Uses separate NodePools per instance family with nodeSelector to guarantee
+# correct family selection. Pod count determines instance size within the family.
+#
+# Required NodePools:
+#   autonode-compute: c6i.xlarge, c6i.2xlarge, c6i.4xlarge
+#   autonode-general: m6i.xlarge, m6i.2xlarge, m6i.4xlarge
+#   autonode-memory:  r6i.xlarge, r6i.2xlarge, r6i.4xlarge
+#
+# Total: 99 pods across 9 waves (3 sizes x 3 families)
+delay: 30s
+stress:
+  secrets: 20
+  configmaps: 20
+  services: 10
+  routes: 4
+  networkPolicies: 3
+waves:
+# --- xlarge (4c) ---
+- pods: 4
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.xlarge
+- pods: 4
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.xlarge
+- pods: 4
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.xlarge
+# --- 2xlarge (8c) ---
+- pods: 9
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.2xlarge
+- pods: 9
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.2xlarge
+- pods: 9
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.2xlarge
+# --- 4xlarge (16c) ---
+- pods: 20
+  cpuRequest: "500m"
+  nodepool: autonode-compute     # c6i.4xlarge
+- pods: 20
+  cpuRequest: "500m"
+  nodepool: autonode-general      # m6i.4xlarge
+- pods: 20
+  cpuRequest: "500m"
+  nodepool: autonode-memory       # r6i.4xlarge

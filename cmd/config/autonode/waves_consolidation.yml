@@ -1,0 +1,35 @@
+# Delay between waves
+delay: 30s
+# Control-plane stress objects per namespace
+# Scaled for ~20 pods/wave avg (100 pods / 5 waves)
+stress:
+  secrets: 20
+  configmaps: 20
+  services: 10
+  routes: 4
+  networkPolicies: 3
+# Each wave targets a specific m5 instance type via CPU requests
+# Total: 100 pods, 50 cores
+waves:
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 2
+  cpuRequest: "500m"    # 1 x m5.xlarge (4 vCPU)
+- pods: 38
+  cpuRequest: "500m"    # 1 x m5.8xlarge (32 vCPU)
