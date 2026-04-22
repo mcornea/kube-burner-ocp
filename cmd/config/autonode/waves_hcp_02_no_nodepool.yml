@@ -20,224 +20,152 @@ waves:
 # Cycle 1
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 2
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 3
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 4
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 5
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 6
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 7
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory
 # Cycle 8
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 6
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 12
   cpuRequest: "500m"
-  nodepool: autonode-memory
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-compute
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-general
 - pods: 24
   cpuRequest: "500m"
-  nodepool: autonode-memory

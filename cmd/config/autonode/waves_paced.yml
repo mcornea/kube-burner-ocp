@@ -8,7 +8,7 @@
 #   autonode-memory:  r6i.xlarge, r6i.2xlarge, r6i.4xlarge
 #
 # Total: 99 pods across 9 waves (3 sizes x 3 families)
-delay: 30s
+delay: 400s
 # Stress per namespace aligned with cluster-density-v2
 stress:
   secrets: 10
@@ -37,13 +37,13 @@ waves:
 - pods: 9
   cpuRequest: "500m"
   nodepool: autonode-memory       # r6i.2xlarge
-# --- 4xlarge (16c) ---
-- pods: 20
-  cpuRequest: "500m"
-  nodepool: autonode-compute     # c6i.4xlarge
-- pods: 20
-  cpuRequest: "500m"
-  nodepool: autonode-general      # m6i.4xlarge
-- pods: 20
-  cpuRequest: "500m"
-  nodepool: autonode-memory       # r6i.4xlarge
+## --- 4xlarge (16c) ---
+#- pods: 20
+#  cpuRequest: "500m"
+#  nodepool: autonode-compute     # c6i.4xlarge
+#- pods: 20
+#  cpuRequest: "500m"
+#  nodepool: autonode-general      # m6i.4xlarge
+#- pods: 20
+#  cpuRequest: "500m"
+#  nodepool: autonode-memory       # r6i.4xlarge

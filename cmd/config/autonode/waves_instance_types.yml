@@ -9,11 +9,12 @@
 #
 # Total: 99 pods across 9 waves (3 sizes x 3 families)
 delay: 30s
+# Stress per namespace aligned with cluster-density-v2
 stress:
-  secrets: 20
-  configmaps: 20
-  services: 10
-  routes: 4
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
   networkPolicies: 3
 waves:
 # --- xlarge (4c) ---

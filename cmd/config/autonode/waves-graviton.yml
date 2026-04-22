@@ -1,0 +1,28 @@
+# Multi-instance-type wave config targeting c6i, m6i, and r6i families
+# Uses separate NodePools per instance family with nodeSelector to guarantee
+# correct family selection. Pod count determines instance size within the family.
+#
+# Required NodePools:
+#   autonode-graviton: c6i.xlarge, c6i.2xlarge, c6i.4xlarge
+#
+delay: 30s
+# Stress per namespace aligned with cluster-density-v2
+stress:
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
+  networkPolicies: 3
+waves:
+# --- xlarge (4c) ---
+- pods: 4
+  cpuRequest: "500m"
+  nodepool: autonode-graviton     # c6i.xlarge
+# --- 2xlarge (8c) ---
+- pods: 9
+  cpuRequest: "500m"
+  nodepool: autonode-graviton     # c6i.2xlarge
+# --- 4xlarge (16c) ---
+- pods: 20
+  cpuRequest: "500m"
+  nodepool: autonode-graviton     # c6i.4xlarge

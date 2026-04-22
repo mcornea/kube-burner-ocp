@@ -1,12 +1,12 @@
 # Delay between waves
 delay: 30s
 # Control-plane stress objects per namespace
-# Scaled for ~22 pods/wave avg (1000 pods / 45 waves)
+# Stress per namespace aligned with cluster-density-v2
 stress:
-  secrets: 22
-  configmaps: 22
-  services: 11
-  routes: 5
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
   networkPolicies: 3
 # Normalized wave sizes for predictable churn behavior.
 # Repeating m5.xlarge → m5.8xlarge cycle (6+12+24+48 = 90 pods/cycle).

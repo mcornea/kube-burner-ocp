@@ -22,6 +22,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/client-go/kubernetes"
 	kubeburnermeasurements "github.com/kube-burner/kube-burner/v2/pkg/measurements"
 	"github.com/kube-burner/kube-burner/v2/pkg/config"
 	"github.com/kube-burner/kube-burner/v2/pkg/workloads"
@@ -133,11 +134,25 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 			AdditionalVars["STRESS_SERVICES"] = stress.Services
 			AdditionalVars["STRESS_ROUTES"] = stress.Routes
 			AdditionalVars["STRESS_NETWORKPOLICIES"] = stress.NetworkPolicies
+
+			kubeClientProvider := config.NewKubeClientProvider("", "")
+			clientSet, _ := kubeClientProvider.DefaultClientSet()
+			karpenterAvailable := hasCRDGroup(clientSet, "karpenter.sh", "v1")
+			AdditionalVars["KARPENTER_ENABLED"] = karpenterAvailable
+
+			measurementFactories := map[string]kubeburnermeasurements.NewMeasurementFactory{
+				"autoNodeLatency": ocpMeasurements.NewAutoNodeLatencyFactory,
+			}
+			if karpenterAvailable {
+				log.Info("Karpenter CRDs detected, enabling nodeClaimLatency measurement")
+				measurementFactories["nodeClaimLatency"] = ocpMeasurements.NewNodeClaimLatencyFactory
+			} else {
+				log.Info("Karpenter CRDs not found, enabling machineLatency measurement")
+				measurementFactories["machineLatency"] = ocpMeasurements.NewMachineLatencyFactory
+			}
+
 			setMetrics(cmd, metricsProfiles)
-			wh.SetMeasurements(map[string]kubeburnermeasurements.NewMeasurementFactory{
-				"autoNodeLatency":  ocpMeasurements.NewAutoNodeLatencyFactory,
-				"nodeClaimLatency": ocpMeasurements.NewNodeClaimLatencyFactory,
-			})
+			wh.SetMeasurements(measurementFactories)
 			wh.SetVariables(AdditionalVars, SetVars)
 			rc = wh.Run(cmd.Name() + ".yml")
 		},
@@ -158,4 +173,9 @@ func NewAutoNode(wh *workloads.WorkloadHelper, embedFS embed.FS) *cobra.Command 
 	cmd.Flags().StringVar(&deletionStrategy, "deletion-strategy", config.GVRDeletionStrategy, "GC deletion mode")
 	cmd.Flags().StringSliceVar(&metricsProfiles, "metrics-profile", []string{"metrics.yml"}, "Comma separated list of metrics profiles to use")
 	return cmd
+}
+
+func hasCRDGroup(clientSet kubernetes.Interface, group, version string) bool {
+	_, err := clientSet.Discovery().ServerResourcesForGroupVersion(group + "/" + version)
+	return err == nil
 }

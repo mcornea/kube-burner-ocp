@@ -1,12 +1,12 @@
 # Delay between waves
 delay: 30s
 # Control-plane stress objects per namespace
-# Scaled for ~345 pods/wave avg
+# Stress per namespace aligned with cluster-density-v2
 stress:
-  secrets: 345
-  configmaps: 345
-  services: 172
-  routes: 69
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
   networkPolicies: 3
 # Required NodePools:
 #   autonode-compute: c6i.xlarge, c6i.2xlarge, c6i.4xlarge

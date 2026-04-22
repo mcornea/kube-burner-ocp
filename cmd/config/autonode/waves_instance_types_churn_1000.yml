@@ -11,11 +11,12 @@
 # (6+12+24) x 3 families = 126 pods/cycle
 # 16 full cycles = 2016 pods total, 1008 cores
 delay: 15s
+# Stress per namespace aligned with cluster-density-v2
 stress:
-  secrets: 22
-  configmaps: 22
-  services: 11
-  routes: 5
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
   networkPolicies: 3
 waves:
 # Cycle 1

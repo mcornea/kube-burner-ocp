@@ -1,0 +1,246 @@
+# Delay between waves
+delay: 30s
+# Control-plane stress objects per namespace
+# Stress per namespace aligned with cluster-density-v2
+stress:
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
+  networkPolicies: 3
+# Required NodePools (35 pools, one per instance type, each with its own NodeClass):
+#   Gen 6i: c6i, m6i, r6i  (xlarge, 2xlarge, 4xlarge, 8xlarge)
+#   Gen 7i: c7i, m7i, r7i  (xlarge, 2xlarge, 4xlarge, 8xlarge)
+#   Gen 6a: c6a, m6a, r6a  (xlarge, 2xlarge, 4xlarge, 8xlarge — except r6a has no 8xlarge)
+#
+# 8 cycles x 9 waves = 72 waves
+# Generations rotate: 6i -> 7i -> 6a -> 6i -> 7i -> 6a -> 6i -> 7i
+# Odd cycles use 4xlarge tier, even cycles use 8xlarge tier
+# (cycle 6 uses c6a/m6a 8xlarge + r6a 4xlarge since r6a has no 8xlarge)
+# Pod counts per wave: xlarge=6, 2xlarge=12, 4xlarge/8xlarge=24
+# (24x6 + 24x12 + 16x24 + 8x24) = 1008 pods, 504 cores, 72 nodes
+waves:
+# Cycle 1 — Gen 6i (xlarge + 2xlarge + 4xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-4xlarge
+# Cycle 2 — Gen 7i (xlarge + 2xlarge + 8xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-8xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-8xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-8xlarge
+# Cycle 3 — Gen 6a (xlarge + 2xlarge + 4xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c6a-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m6a-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r6a-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c6a-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m6a-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r6a-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c6a-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m6a-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r6a-4xlarge
+# Cycle 4 — Gen 6i (xlarge + 2xlarge + 8xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-8xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-8xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-8xlarge
+# Cycle 5 — Gen 7i (xlarge + 2xlarge + 4xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-4xlarge
+# Cycle 6 — Gen 6a (xlarge + 2xlarge + c6a/m6a 8xlarge + r6a 4xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c6a-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m6a-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r6a-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c6a-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m6a-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r6a-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c6a-8xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m6a-8xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r6a-4xlarge
+# Cycle 7 — Gen 6i (xlarge + 2xlarge + 4xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c6i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m6i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r6i-4xlarge
+# Cycle 8 — Gen 7i (xlarge + 2xlarge + 4xlarge)
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-xlarge
+- pods: 6
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-2xlarge
+- pods: 12
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-2xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-c7i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-m7i-4xlarge
+- pods: 24
+  cpuRequest: "500m"
+  nodepool: autonode-r7i-4xlarge

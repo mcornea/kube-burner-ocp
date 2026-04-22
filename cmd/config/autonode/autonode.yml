@@ -10,7 +10,11 @@ global:
           metric: P99
           threshold: {{.POD_READY_THRESHOLD}}
     - name: autoNodeLatency
+{{ if .KARPENTER_ENABLED }}
     - name: nodeClaimLatency
+{{ else }}
+    - name: machineLatency
+{{ end }}
 
 metricsEndpoints:
 {{ if .ES_SERVER }}
