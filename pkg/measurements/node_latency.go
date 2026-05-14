@@ -43,19 +43,20 @@ const (
 
 type autoNodeLatency struct {
 	measurements.BaseMeasurement
-	watcher *watchers.Watcher
+	watcher         *watchers.Watcher
+	preExistingUIDs sync.Map
 }
 
 type autoNodeLatencyFactory struct {
 	measurements.BaseMeasurementFactory
 }
 
-// NewAutoNodeLatencyFactory creates a nodeLatency measurement factory that watches nodes
-// with the "autonode=true" label instead of the kube-burner.io/runid label used by the built-in
-// nodeLatency watcher. This is needed because Karpenter-provisioned nodes don't carry kube-burner labels.
+// NewAutoNodeLatencyFactory creates a nodeLatency measurement factory that watches all nodes.
+// Pre-existing nodes are tracked at Start time and excluded from latency results so that
+// only nodes provisioned during the test are measured.
 func NewAutoNodeLatencyFactory(configSpec config.Spec, measurement types.Measurement, metadata map[string]any, _ string) (measurements.MeasurementFactory, error) {
 	return autoNodeLatencyFactory{
-		BaseMeasurementFactory: measurements.NewBaseMeasurementFactory(configSpec, measurement, metadata, "autonode=true"),
+		BaseMeasurementFactory: measurements.NewBaseMeasurementFactory(configSpec, measurement, metadata, ""),
 	}, nil
 }
 
@@ -122,6 +123,10 @@ func (n *autoNodeLatency) Start(measurementWg *sync.WaitGroup) error {
 	wg.Add(1)
 	n.Collect(&wg)
 	wg.Wait()
+	n.Metrics.Range(func(key, _ any) bool {
+		n.preExistingUIDs.Store(key, struct{}{})
+		return true
+	})
 	gvr, err := util.ResourceToGVR(n.RestConfig, "Node", "v1")
 	if err != nil {
 		return fmt.Errorf("error getting GVR for Node: %w", err)
@@ -202,6 +207,9 @@ func (n *autoNodeLatency) Stop() error {
 
 func (n *autoNodeLatency) normalizeLatencies() float64 {
 	n.Metrics.Range(func(key, value any) bool {
+		if _, preExisting := n.preExistingUIDs.Load(key); preExisting {
+			return true
+		}
 		m := value.(measurements.NodeMetric)
 		if m.NodeReady.IsZero() {
 			log.Tracef("Node %v latency ignored as it did not reach Ready state", m.Name)

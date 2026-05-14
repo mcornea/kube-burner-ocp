@@ -79,6 +79,7 @@ type machineLatency struct {
 	watcher      *watchers.Watcher
 	mcRestConfig *rest.Config
 	hcpNamespace string
+	startTime    time.Time
 }
 
 type machineLatencyFactory struct {
@@ -233,9 +234,11 @@ func (ml *machineLatency) handleUpdate(obj any) {
 func (ml *machineLatency) Start(measurementWg *sync.WaitGroup) error {
 	ml.LatencyQuantiles, ml.NormLatencies = nil, nil
 	ml.Metrics = sync.Map{}
+	ml.startTime = time.Now().UTC()
 	defer measurementWg.Done()
 
-	// Pre-populate existing Machines
+	// Pre-populate existing Machines so the watcher can track updates to
+	// machines created between listing and watcher start.
 	ml.collectExisting()
 
 	log.Infof("Creating Machine latency watcher for %s in namespace %s", ml.JobConfig.Name, ml.hcpNamespace)
@@ -348,6 +351,10 @@ func (ml *machineLatency) Stop() error {
 func (ml *machineLatency) normalizeLatencies() float64 {
 	ml.Metrics.Range(func(key, value any) bool {
 		m := value.(machineMetric)
+		if m.Timestamp.Before(ml.startTime) {
+			log.Tracef("Machine %v latency ignored as it was created before measurement started", m.Name)
+			return true
+		}
 		if m.Ready.IsZero() {
 			log.Tracef("Machine %v latency ignored as it did not reach Ready state", m.Name)
 			return true

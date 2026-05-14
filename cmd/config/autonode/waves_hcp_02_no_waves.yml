@@ -1,0 +1,17 @@
+# Delay between waves
+delay: 0s
+# Control-plane stress objects per namespace
+# Stress per namespace aligned with cluster-density-v2
+stress:
+  secrets: 10
+  configmaps: 10
+  services: 5
+  routes: 2
+  networkPolicies: 3
+waves:
+# Cycle 1
+- pods: 2000
+  cpuRequest: "510m"
+#- pods: 2460
+#  cpuRequest: "176m"
+#  nodepool: autonode-general

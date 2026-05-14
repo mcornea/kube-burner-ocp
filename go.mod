@@ -16,6 +16,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/vishvananda/netlink v1.2.1-beta.2.0.20231024175852-77df5d35f725
 	golang.org/x/sys v0.33.0
+	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.31.1
 	k8s.io/apimachinery v0.31.1
 	k8s.io/client-go v0.31.1
@@ -86,7 +87,6 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apiextensions-apiserver v0.31.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.31.0 // indirect
@@ -103,6 +103,6 @@ require (
 
 replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20240430033511-f0e62f92d13f // Replacements are not inherited from dependencies, this replacement is required by kubevirt.io/client-go prevents updating this module accidentally
 
-replace github.com/kube-burner/kube-burner/v2 => github.com/mcornea/kube-burner/v2 v2.0.0-20260227135650-fb825e096aa2
+replace github.com/kube-burner/kube-burner/v2 => ../kube-burner
 
 exclude github.com/kube-burner/kube-burner v1.20.6 // Published accidentally
