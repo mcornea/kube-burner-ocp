@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drain-test-{{.Replica}}
+  namespace: {{.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drain-test-{{.Replica}}
+  template:
+    metadata:
+      labels:
+        app: drain-test-{{.Replica}}
+    spec:
+      terminationGracePeriodSeconds: 30
+      nodeSelector:
+        hypershift.openshift.io/interruptible-instance: ""
+      containers:
+        - name: workload
+          image: registry.k8s.io/pause:3.9
+          resources:
+            requests:
+              cpu: "{{.cpuRequest}}"
+              memory: "{{.memoryRequest}}"
+{{ if eq .workloadType "standard" }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 15"]
+{{ end }}
+      tolerations:
+        - key: "aws-node-termination-handler"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "aws-node-termination-handler"
+          operator: "Exists"
+          effect: "NoExecute"

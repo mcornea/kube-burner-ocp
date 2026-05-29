@@ -49,6 +49,21 @@ var machineGVR = schema.GroupVersionResource{
 	Resource: "machines",
 }
 
+// nthDoneCh is closed by nthSpotLatency when all replacements are Ready.
+// machineLatency waits on it so its watcher stays alive during the observation window.
+var (
+	nthDoneCh   chan struct{}
+	nthDoneMu   sync.Mutex
+	nthTimeout  time.Duration
+)
+
+func SetNthDone(ch chan struct{}, timeout time.Duration) {
+	nthDoneMu.Lock()
+	nthDoneCh = ch
+	nthTimeout = timeout
+	nthDoneMu.Unlock()
+}
+
 // CAPI Machine condition types tracked for latency
 const (
 	machineInfrastructureReady = "InfrastructureReady"
@@ -110,7 +125,7 @@ func NewMachineLatencyFactory(configSpec config.Spec, measurement types.Measurem
 	// HCP_NAMESPACE (e.g. "sub_id-cluster_name") may not be the full MC namespace.
 	// The actual MC namespace has a prefix like "ocm-staging-". Discover it by
 	// listing namespaces and finding the one whose name ends with HCP_NAMESPACE.
-	mcNamespace, err := discoverHCPNamespace(mcRestConfig, hcpNamespace)
+	mcNamespace, err := DiscoverHCPNamespace(mcRestConfig, hcpNamespace)
 	if err != nil {
 		log.Errorf("Failed to discover HCP namespace on MC: %v", err)
 		return nil, err
@@ -123,9 +138,9 @@ func NewMachineLatencyFactory(configSpec config.Spec, measurement types.Measurem
 	}, nil
 }
 
-// discoverHCPNamespace finds the actual namespace on the MC that ends with the
+// DiscoverHCPNamespace finds the actual namespace on the MC that ends with the
 // given hcpNamespace suffix. Falls back to the exact value if no suffixed match is found.
-func discoverHCPNamespace(restConfig *rest.Config, hcpNamespace string) (string, error) {
+func DiscoverHCPNamespace(restConfig *rest.Config, hcpNamespace string) (string, error) {
 	mcClientSet, err := kubernetes.NewForConfig(restConfig)
 	if err != nil {
 		return "", fmt.Errorf("failed to create MC clientset: %w", err)
@@ -342,6 +357,16 @@ func (ml *machineLatency) Collect(measurementWg *sync.WaitGroup) {
 }
 
 func (ml *machineLatency) Stop() error {
+	nthDoneMu.Lock()
+	ch := nthDoneCh
+	t := nthTimeout
+	nthDoneMu.Unlock()
+	if ch != nil {
+		select {
+		case <-ch:
+		case <-time.After(t):
+		}
+	}
 	if ml.watcher != nil {
 		ml.watcher.StopWatcher()
 	}
