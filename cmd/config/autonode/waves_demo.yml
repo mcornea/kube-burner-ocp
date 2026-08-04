@@ -1,0 +1,19 @@
+# Simple demo wave to validate OCPBUGS-85085 and OCPBUGS-85090 fixes
+# Uses the demo NodePool targeting m6i.2xlarge via example-nodeclass
+# with maxPods=250 and kubeReserved.cpu=500m
+#
+# 100 pods @ 20m CPU = 2000m total -> should fit on 1 node
+# (allocatable ~7500m with correct kubeReserved)
+# Without the fix: Karpenter would think allocatable=7910m and pods=58,
+# requiring 2 nodes instead of 1
+delay: 0s
+stress:
+  secrets: 0
+  configmaps: 0
+  services: 0
+  routes: 0
+  networkPolicies: 0
+waves:
+- pods: 100
+  cpuRequest: "20m"
+  nodepool: demo
