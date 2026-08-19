@@ -14,7 +14,7 @@ metadata:
     app.kubernetes.io/part-of: build-farm-workload
     app.kubernetes.io/instance: build-farm-{{.Iteration}}
     build-farm-watcher: "watcher{{mod .Replica .numWatchers | add1}}"
-  name: build-small-{{.Replica}}
+  name: build-medium-{{.Replica}}
 spec:
   activeDeadlineSeconds: 7200
   backoffLimit: 3
@@ -92,11 +92,11 @@ spec:
           value: {{.buildPlatform}}
         resources:
           limits:
-            memory: 512Mi
-            cpu: 500m
+            memory: 1Gi
+            cpu: 1000m
           requests:
-            cpu: 250m
-            memory: 256Mi
+            cpu: 700m
+            memory: 700Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -201,6 +201,45 @@ spec:
         - mountPath: /secrets/build-secret-29-{{ add (mod (add (mul .Replica 2) 29) (div (mul .iterationsPerNamespace 3) 2)) 1 }}
           name: build-secret-volume-29-{{ add (mod (add (mul .Replica 2) 29) (div (mul .iterationsPerNamespace 3) 2)) 1 }}
           readOnly: true
+      - name: step-compile
+        image: {{.buildImage}}
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting compilation simulation"
+          echo "Platform: {{.buildPlatform}}"
+          echo "Target: {{.targetImage}}"
+          for i in $(seq 1 120); do
+            echo "Compiling source... $i/120"
+            sleep 1
+          done
+          echo "Compilation completed"
+        env:
+        - name: IMAGE
+          value: {{.targetImage}}
+        - name: PLATFORM
+          value: {{.buildPlatform}}
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 1000m
+          requests:
+            cpu: 700m
+            memory: 700Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - MKNOD
+            - ALL
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
       - name: step-update-metadata
         image: quay.io/kube-burner/build-farm-controller:metadata-adder
         imagePullPolicy: IfNotPresent
@@ -233,11 +272,11 @@ spec:
           value: "{{.metadataIterationsDelay}}"
         resources:
           limits:
-            memory: 512Mi
-            cpu: 500m
+            memory: 1Gi
+            cpu: 1000m
           requests:
-            cpu: 250m
-            memory: 256Mi
+            cpu: 700m
+            memory: 700Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

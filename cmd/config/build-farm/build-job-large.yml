@@ -143,11 +143,11 @@ spec:
           value: {{.buildPlatform}}
         resources:
           limits:
-            memory: 4Gi
-            cpu: 200m
+            memory: 2Gi
+            cpu: 400m
           requests:
-            cpu: 15m
-            memory: 64Mi
+            cpu: 200m
+            memory: 1500Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -264,11 +264,11 @@ spec:
           value: /tmp/build-tmp
         resources:
           limits:
-            memory: 8Gi
-            cpu: 200m
+            memory: 2Gi
+            cpu: 400m
           requests:
-            cpu: 15m
-            memory: 64Mi
+            cpu: 200m
+            memory: 1500Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -430,11 +430,11 @@ spec:
           value: "false"
         resources:
           limits:
-            memory: 4Gi
-            cpu: 200m
+            memory: 2Gi
+            cpu: 400m
           requests:
-            cpu: 15m
-            memory: 64Mi
+            cpu: 200m
+            memory: 1500Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -615,11 +615,11 @@ spec:
           value: "{{.Iteration}}"
         resources:
           limits:
-            memory: 8Gi
-            cpu: 200m
+            memory: 2Gi
+            cpu: 400m
           requests:
-            cpu: 15m
-            memory: 64Mi
+            cpu: 200m
+            memory: 1500Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -760,10 +760,10 @@ spec:
         resources:
           limits:
             memory: 2Gi
-            cpu: 200m
+            cpu: 400m
           requests:
-            cpu: 15m
-            memory: 64Mi
+            cpu: 200m
+            memory: 1500Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -844,6 +844,14 @@ spec:
           requests:
             cpu: 15m
             memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
       initContainers:
@@ -1206,8 +1214,6 @@ spec:
           name: build-metrics-volume
         - mountPath: /tmp/build-tmp
           name: build-tmp-volume
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
       restartPolicy: Never
       schedulerName: default-scheduler
       securityContext:

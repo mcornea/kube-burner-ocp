@@ -3,6 +3,7 @@ global:
   gc: {{ .GC }}
   gcMetrics: {{ .GC_METRICS }}
   deletionStrategy: {{ .DELETION_STRATEGY }}
+  clusterHealth: false
   measurements:
     - name: podLatency
 
@@ -25,31 +26,6 @@ metricsEndpoints:
 {{ end }}
 
 jobs:
-  - name: build-farm-preload-images
-    namespace: build-farm-preload
-    jobIterations: 1
-    skipIndexing: true
-    namespacedIterations: false
-    preLoadImages: false
-    namespaceLabels:
-      security.openshift.io/scc.podSecurityLabelSync: "false"
-      pod-security.kubernetes.io/enforce: privileged
-      pod-security.kubernetes.io/audit: privileged
-      pod-security.kubernetes.io/warn: privileged
-    objects:
-      - objectTemplate: build-farm-preload-rolebinding.yml
-        replicas: 1
-      - objectTemplate: build-farm-ds-preload.yml
-        replicas: 1
-        inputVars:
-          preloadName: build-image
-          preloadImage: "{{ .BUILD_IMAGE }}"
-      - objectTemplate: build-farm-ds-preload.yml
-        replicas: 1
-        inputVars:
-          preloadName: metadata-adder
-          preloadImage: "quay.io/kube-burner/build-farm-controller:metadata-adder"
-
   - name: build-farm-controller
     namespace: build-farm-controllers
     jobIterations: 1
@@ -88,7 +64,8 @@ jobs:
     churnConfig:
       cycles: {{ .CHURN_CYCLES }}
       percent: {{ .CHURN_PERCENT }}
-      delay: {{ .CHURN_DELAY }}
+      deleteDelay: {{ .CHURN_DELAY }}
+      delay: 0s
       mode: objects
     objects:
       - objectTemplate: build-job-sa.yml
@@ -108,6 +85,17 @@ jobs:
         churn: false
       - objectTemplate: build-job-small.yml
         replicas: {{ div (mul .ITERATIONS_PER_NAMESPACE .SMALL_JOB_PERCENT) 100 }}
+        churn: true
+        inputVars:
+          iterationsPerNamespace: {{ .ITERATIONS_PER_NAMESPACE }}
+          metadataIterations: "{{ .METADATA_ITERATIONS }}"
+          metadataIterationsDelay: "{{ .METADATA_ITERATIONS_DELAY }}"
+          numWatchers: "{{ .NUM_WATCHERS }}"
+          buildImage: "{{ .BUILD_IMAGE }}"
+          buildPlatform: "{{ .BUILD_PLATFORM }}"
+          targetImage: "{{ .TARGET_IMAGE }}"
+      - objectTemplate: build-job-medium.yml
+        replicas: {{ div (mul .ITERATIONS_PER_NAMESPACE .MEDIUM_JOB_PERCENT) 100 }}
         churn: true
         inputVars:
           iterationsPerNamespace: {{ .ITERATIONS_PER_NAMESPACE }}

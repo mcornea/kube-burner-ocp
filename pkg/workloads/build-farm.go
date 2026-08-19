@@ -48,18 +48,18 @@ func NewBuildFarm(wh *workloads.WorkloadHelper) *cobra.Command {
 	var metadataIterationsDelay time.Duration
 	var numWatchers int
 	var buildImage, buildPlatform, targetImage string
-	var smallJobPercent int
+	var smallJobPercent, mediumJobPercent int
 
 	cmd := &cobra.Command{
 		Use:          "build-farm",
 		Short:        "Runs build-farm workload",
 		SilenceUsage: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			// Validate small job percentage
-			if smallJobPercent < 0 || smallJobPercent > 100 {
-				log.Fatalf("small-job-percent must be between 0 and 100, got %d", smallJobPercent)
+			// Validate job percentages
+			if smallJobPercent+mediumJobPercent > 100 {
+				log.Fatalf("small-job-percent + medium-job-percent must be <= 100, got %d", smallJobPercent+mediumJobPercent)
 			}
-			largeJobPercent := 100 - smallJobPercent
+			largeJobPercent := 100 - smallJobPercent - mediumJobPercent
 
 			// Set standard variables
 			AdditionalVars["JOB_ITERATIONS"] = jobIterations
@@ -97,9 +97,11 @@ func NewBuildFarm(wh *workloads.WorkloadHelper) *cobra.Command {
 			AdditionalVars["BUILD_PLATFORM"] = buildPlatform
 			AdditionalVars["TARGET_IMAGE"] = targetImage
 			AdditionalVars["SMALL_JOB_PERCENT"] = smallJobPercent
+			AdditionalVars["MEDIUM_JOB_PERCENT"] = mediumJobPercent
 			AdditionalVars["LARGE_JOB_PERCENT"] = largeJobPercent
 
 			log.Infof("Running build-farm workload with %d job iterations across %d iterations per namespace", jobIterations, iterationsPerNamespace)
+			log.Infof("Job mix: %d%% small, %d%% medium, %d%% large", smallJobPercent, mediumJobPercent, largeJobPercent)
 			log.Infof("Controller config: %d controllers, %d threads per controller", numControllers, numThreads)
 
 			setMetrics(cmd, metricsProfiles)
@@ -143,7 +145,9 @@ func NewBuildFarm(wh *workloads.WorkloadHelper) *cobra.Command {
 	cmd.Flags().StringVar(&buildImage, "build-image", "quay.io/prometheus/busybox", "Container image to use for build simulation")
 	cmd.Flags().StringVar(&buildPlatform, "build-platform", "linux/x86_64", "Build platform architecture")
 	cmd.Flags().StringVar(&targetImage, "target-image", "registry.local/build-farm/test-image", "Target image registry path")
-	cmd.Flags().IntVar(&smallJobPercent, "small-job-percent", 80, "Percentage of small build jobs (0-100, large jobs get remainder)")
+	cmd.Flags().IntVar(&smallJobPercent, "small-job-percent", 40, "Percentage of small build jobs (0-100)")
+	cmd.Flags().IntVar(&mediumJobPercent, "medium-job-percent", 30, "Percentage of medium build jobs (0-100, large jobs get remainder)")
+
 
 	// Metrics profile
 	cmd.Flags().StringSliceVar(&metricsProfiles, "metrics-profile", []string{"build-farm-metrics.yml", "metrics.yml"}, "Comma separated list of metrics profiles to use")
